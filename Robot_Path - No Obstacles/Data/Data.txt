@@ -1,0 +1,3 @@
+Total Area = 100.000
+Total Energy = 20.0006931928361
+Total Time = 293.260659319932
