@@ -11,7 +11,7 @@ clear all
 % Generate Independent Variables ------------------------------------------
 toms t
 toms tf
-p = tomPhase('p', t, 0, tf, 10, [], 'fem1s'); % Use splines with FEM constraints
+p = tomPhase('p', t, 0, tf, 1000, [], 'fem1s'); % Use splines with FEM constraints
 %   p = tomPhase('p', t, 0, tf, 100);           % Use linear finite elements
 %  p = tomPhase('p', t, 0, 2, 100);            % Use Gauss point collocation
 setPhase(p);
