@@ -1,39 +1,39 @@
-%------------ Optimal Robot Path Planning ---------------------------------------
-% Code:     Coverage Path Planning Algorithm - No Obstacles
-% Authors:  Ankit Manerikar, Debasmit Das, Pranay Banerjee
-% Date:     04/11/2016
-% Course:   AAE568
-%--------------------------------------------------------------------------------
+%------------ Optimal Robot Path Planning ----------------------------------------------
+% Code:        Coverage Path Planning Algorithm - No Obstacles
+% Authors:     Ankit Manerikar, Debasmit Das, Pranay Banerjee
+% Date:        04/11/2016
+% Course:      AAE568
+% Description  The following code consists of a coverage path planning algorithm 
+%              implemented using pseudospectral optimal control and through boustro-
+%              phedon cellular decomposition for a rectangular field with no obstacles 
+%              and assuming a point robot with a fixed coverage radius.
+%---------------------------------------------------------------------------------------
 clc
 close all
 clear all
 
-% Generate Independent Variables ------------------------------------------
+% Generate Independent Variables for tomlab environement--------------------------------
 toms t
 toms tf
+% Select the method for interpolation
 p = tomPhase('p', t, 0, tf, 1000, [], 'fem1s'); % Use splines with FEM constraints
 %   p = tomPhase('p', t, 0, tf, 100);           % Use linear finite elements
-%  p = tomPhase('p', t, 0, 2, 100);            % Use Gauss point collocation
+%  p = tomPhase('p', t, 0, 2, 100);             % Use Gauss point collocation
 setPhase(p);
 
-% Generate States and Control Variables -----------------------------------
-tomStates   x1 x2 x3 x4
-tomControls u1 u2
+% Generate States and Control Variables ------------------------------------------------
+tomStates   x1 x2 x3 x4                         % represents 2D physical coordinates as states
+tomControls u1 u2                               % Control inputs (accelerations)
 
 %Robot/Area Dimensions-----------------------------------------------------------
-w = 0.5;                       % weighing constant
-radr = 0.1;                  % radius of coverage
+w = 0.5;                                        % weighing constant
+radr = 0.1;                                     % radius of coverage
 
+%Field Dimensions
 Dx = 10;
 Dy = 10;
 
 %Obstacle Parameters ------------------------------------------------------ 
-rad = 0.04*rand(10,1);
-xrnd = 8*rand(10,1)+1;
-yrnd = 8*rand(10,1)+1;
-
-x_init = 0:1:10;
-y_init = 0:1:10;
 % Performance Parameter Initialization ------------------------------------
 % area_iter(1) = 0;
 time_tot = 0;
@@ -52,9 +52,6 @@ energy = [];
 figure(1)
 
 rectangle('Position',[0,0,Dx,Dy],'Curvature', [0 0],'LineWidth',1.5,'Linestyle',':');
-% for i = 1:10
-% rectangle('Position',[xrnd(i)-sqrt(rad(i)),yrnd(i)-sqrt(rad(i)),2*sqrt(rad(i)),2*sqrt(rad(i))],'Curvature', [1 1]);
-% end
 box on;
 xlim([-1 11]);
 ylim([-1 11]);
@@ -79,24 +76,11 @@ cbnd = {initial({x1 == 0; x2 == i
                  x3 == 1; x4 == 0})
         final({  x1 == 10; x2 == i
                  x3 == 1; x4 == 0})};
-
 %--------------------------------------------------------------------------
-obstacles = atPoints(linspace(0,tf,300), {
-(x1 - xrnd(1))^2 + (x2 - yrnd(1))^2 >= rad(1)
-(x1 - xrnd(2))^2 + (x2 - yrnd(2))^2 >= rad(2)
-(x1 - xrnd(3))^2 + (x2 - yrnd(3))^2 >= rad(3)
-(x1 - xrnd(4))^2 + (x2 - yrnd(4))^2 >= rad(4)
-(x1 - xrnd(5))^2 + (x2 - yrnd(5))^2 >= rad(5)
-(x1 - xrnd(6))^2 + (x2 - yrnd(6))^2 >= rad(6)
-(x1 - xrnd(7))^2 + (x2 - yrnd(7))^2 >= rad(7)
-(x1 - xrnd(8))^2 + (x2 - yrnd(8))^2 >= rad(8)
-(x1 - xrnd(9))^2 + (x2 - yrnd(9))^2 >= rad(9)
-(x1 - xrnd(10))^2 + (x2 - yrnd(10))^2 >= rad(10)});
-
 
 % ODEs and path constraints------------------------------------------------
 
-ceq = collocate({                                                               % state equations
+ceq = collocate({                                      % state equations
     dot(x1) == x3
     dot(x2) == x4
     dot(x3) == u1
@@ -158,9 +142,6 @@ title('Iteration-wise Area coverage')
 xlabel('Iterations')
 ylabel('Area')
 grid on
-
-% xlim([0 iter+2])
-% ylim([0 101])
 
 
 subplot(3,1,2)
